@@ -1,11 +1,6 @@
 import React, { useRef, useState } from "react";
 import { motion, useMotionTemplate, useSpring } from "framer-motion";
 
-interface Position {
-  x: number;
-  y: number;
-}
-
 interface SpotlightCardProps extends React.PropsWithChildren {
   className?: string;
   spotlightColor?: `rgba(${number}, ${number}, ${number}, ${number})`;
@@ -18,7 +13,6 @@ const SpotlightCard: React.FC<SpotlightCardProps> = ({
 }) => {
   const divRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   
   const springX = useSpring(0, { stiffness: 300, damping: 30 });
   const springY = useSpring(0, { stiffness: 300, damping: 30 });
@@ -30,8 +24,7 @@ const SpotlightCard: React.FC<SpotlightCardProps> = ({
     const rect = divRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    
-    setPosition({ x, y });
+
     springX.set(x);
     springY.set(y);
   };
