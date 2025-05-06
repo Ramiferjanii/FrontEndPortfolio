@@ -1,0 +1,223 @@
+"use client"
+
+import React, { useState } from "react"
+import { FiUser, FiMail, FiBook, FiMessageSquare, FiCheckCircle } from "react-icons/fi"
+import { motion, AnimatePresence } from "framer-motion"
+
+export default function ContactSection() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  })
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('https://backendportfolio-5m1b.onrender.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+      
+      if (data.success) {
+        setFormData({ name: '', email: '', subject: '', message: '' })
+        setShowSuccess(true)
+        setTimeout(() => setShowSuccess(false), 3000)
+      } else {
+        alert(`Error: ${data.message}`)
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Failed to send message. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const SuccessMessage = () => (
+    <AnimatePresence>
+      {showSuccess && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          className="fixed top-4 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2"
+        >
+          <FiCheckCircle className="text-xl" />
+          <span>Message sent successfully!</span>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+
+  return (
+    <section id="contact" className="relative m-5 rounded-lg py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-900 to-black">
+      <SuccessMessage />
+      
+      <div className="max-w-4xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 mb-8 relative">
+            Get in Touch
+            <div className="absolute bottom-0 left-0 w-24 h-1 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full" />
+          </h2>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 gap-12">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="space-y-6"
+          >
+            <p className="text-gray-300 leading-relaxed">
+              Have a project in mind? Let's create something amazing together. Whether it's web development, 
+              UI/UX design, or just a chat about technology, I'm here to help.
+            </p>
+            
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-gray-800 rounded-lg">
+                  <FiMail className="text-blue-400 text-xl" />
+                </div>
+                <div>
+                  <h3 className="text-gray-300 font-medium">Email Me</h3>
+                  <p className="text-gray-400">ramiferjani.20@gmail.com</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-gray-800 rounded-lg">
+                  <FiUser className="text-purple-400 text-xl" />
+                </div>
+                <div>
+                  <h3 className="text-gray-300 font-medium">Social Media</h3>
+                  <p className="text-gray-400">Connect on LinkedIn or WhatsApp</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.form
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            viewport={{ once: true }}
+            onSubmit={handleSubmit}
+            className="space-y-6 bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-xl"
+          >
+            <div className="space-y-4 w-4/5">
+              <div className="relative">
+                <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  className="w-full pl-12 pr-4 py-3 bg-gray-900 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
+                  placeholder="Your Name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="relative">
+                <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="email"
+                  className="w-full pl-12 pr-4 py-3 bg-gray-900 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
+                  placeholder="Your Email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="relative">
+                <FiBook className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  className="w-full pl-12 pr-4 py-3 bg-gray-900 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
+                  placeholder="Subject"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="relative">
+                <FiMessageSquare className="absolute left-4 top-4 text-gray-400" />
+                <textarea
+                  className="w-full pl-12 pr-4 py-3 bg-gray-900 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 h-40"
+                  placeholder="Your Message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-5/6 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3 px-6 rounded-lg transition-all duration-300 font-medium flex items-center justify-center disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex items-center"
+                >
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"
+                  />
+                  Sending...
+                </motion.span>
+              ) : (
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex items-center"
+                >
+                  Send Message
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 ml-2"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                  </svg>
+                </motion.span>
+              )}
+            </button>
+          </motion.form>
+        </div>
+      </div>
+    </section>
+  )
+}
