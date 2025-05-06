@@ -1,11 +1,18 @@
 import { motion, useMotionTemplate, useMotionValue, useSpring } from "framer-motion";
 import { Button } from "@radix-ui/themes";
+import { MouseEvent } from "react";
 
 function Click() {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const scaleX = useSpring(0, { stiffness: 400, damping: 20 });
   const background = useMotionTemplate`radial-gradient(120% 120% at ${x}px ${y}px, rgba(59, 130, 246, 0.2), transparent)`;
+
+  const handleHover = (e: MouseEvent<HTMLButtonElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    x.set(e.clientX - rect.left);
+    y.set(e.clientY - rect.top);
+  };
 
   return (
     <div className="mt-8 mb-2">
@@ -26,11 +33,7 @@ function Click() {
                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500
                      backdrop-blur-sm border-2 border-blue-200/50
                      hover:border-blue-300 transition-colors duration-200"
-          onHover={(e) => {
-            const rect = e.currentTarget.getBoundingClientRect();
-            x.set(e.clientX - rect.left);
-            y.set(e.clientY - rect.top);
-          }}
+          onMouseEnter={handleHover}
         >
           <motion.button
             whileHover={{ 
