@@ -22,27 +22,39 @@ export default function ContactSection() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (isSubmitting) return
     setIsSubmitting(true)
 
     try {
       const response = await fetch('https://backendportfolio-5m1b.onrender.com/send-email', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify(formData),
       })
 
+      // Handle non-JSON responses
+      const contentType = response.headers.get('content-type')
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text()
+        throw new Error(`Invalid response format: ${text.slice(0, 100)}`)
+      }
+
       const data = await response.json()
       
-      if (data.success) {
-        setFormData({ name: '', email: '', subject: '', message: '' })
-        setShowSuccess(true)
-        setTimeout(() => setShowSuccess(false), 3000)
-      } else {
-        alert(`Error: ${data.message}`)
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to send message')
       }
+
+      setFormData({ name: '', email: '', subject: '', message: '' })
+      setShowSuccess(true)
+      setTimeout(() => setShowSuccess(false), 3000)
+
     } catch (error) {
-      console.error('Error:', error)
-      alert('Failed to send message. Please try again.')
+      console.error('Submission error:', error)
+      alert(error instanceof Error ? error.message : 'Failed to send message. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -137,6 +149,7 @@ export default function ContactSection() {
                   value={formData.name}
                   onChange={handleChange}
                   required
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -150,6 +163,7 @@ export default function ContactSection() {
                   value={formData.email}
                   onChange={handleChange}
                   required
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -163,6 +177,7 @@ export default function ContactSection() {
                   value={formData.subject}
                   onChange={handleChange}
                   required
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -175,6 +190,7 @@ export default function ContactSection() {
                   value={formData.message}
                   onChange={handleChange}
                   required
+                  disabled={isSubmitting}
                 />
               </div>
             </div>
@@ -182,7 +198,7 @@ export default function ContactSection() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-5/6 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3 px-6 rounded-lg transition-all duration-300 font-medium flex items-center justify-center disabled:opacity-50"
+              className="w-5/6 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3 px-6 rounded-lg transition-all duration-300 font-medium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <motion.span
