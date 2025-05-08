@@ -28,12 +28,9 @@ export default function ContactSection() {
     try {
       const response = await fetch('https://backendportfolio-5m1b.onrender.com/send-email', {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
-      })
+      });
 
       // Handle non-JSON responses
       const contentType = response.headers.get('content-type')
