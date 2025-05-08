@@ -25,7 +25,7 @@ export default function ContactSection() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch('https://backendportfolio-5m1b.onrender.com/send-email', {
+      const response = await fetch('https://backendportfolio-5m1b.onrender.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
