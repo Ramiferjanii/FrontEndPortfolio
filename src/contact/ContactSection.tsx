@@ -26,7 +26,7 @@ export default function ContactSection() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch('https://backendportfolio-5m1b.onrender.com/send-email', { // ✅ Exact match
+      const response = await fetch('https://backendportfolio-5m1b.onrender.com/api/send-email', { // ✅ Exact match
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
