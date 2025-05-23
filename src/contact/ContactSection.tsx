@@ -53,10 +53,12 @@ export default function ContactSection() {
       setTimeout(() => setShowSuccess(false), 3000)
 
     } catch (error) {
-      console.error('Submission error:', error)
-      alert(error instanceof Error ? error.message : 'Failed to send message. Please try again.')
-    } finally {
-      setIsSubmitting(false)
+      console.error('Full error details:', {
+        error,
+        formData,
+        time: new Date().toISOString()
+      });
+      alert(error instanceof Error ? error.message : 'Failed to send message. Please try again.');
     }
   }
 
