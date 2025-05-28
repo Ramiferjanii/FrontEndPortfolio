@@ -50,15 +50,15 @@ export default function ContactSection() {
 
     try {
       const url = `${BASE_URL}/send-email`;
-      console.log('BASE_URL:', BASE_URL);
-      console.log('Full URL being used:', url);
-      console.log('Request details:', {
+      console.log('Making request to:', {
+        url,
+        baseUrl: BASE_URL,
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify(formData)
+        data: formData
       });
       
       const response = await fetch(url, {
@@ -70,21 +70,31 @@ export default function ContactSection() {
         body: JSON.stringify(formData)
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
       let responseData;
       try {
         const text = await response.text();
-        console.log('Raw response:', text);
+        console.log('Raw response text:', text);
         try {
           responseData = JSON.parse(text);
+          console.log('Parsed response data:', responseData);
         } catch (e) {
-          console.error('Response is not JSON:', text);
+          console.error('Failed to parse response as JSON:', text);
           throw new Error('Server returned invalid JSON');
         }
       } catch (e) {
+        console.error('Failed to read response:', e);
         throw new Error('Failed to read server response');
       }
 
       if (!response.ok) {
+        console.error('Request failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          data: responseData
+        });
         throw new Error(responseData.message || `Server error: ${response.status}`);
       }
 
