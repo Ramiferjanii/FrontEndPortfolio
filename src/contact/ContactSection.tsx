@@ -14,51 +14,81 @@ export default function ContactSection() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [error, setError] = useState("")
+
+  // API URL based on environment
+  const API_URL = import.meta.env.PROD 
+    ? 'https://portfolio-backend-5m1b.onrender.com'
+    : 'http://localhost:3001';
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+    setError("") // Clear any previous errors
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (isSubmitting) return
+    
     setIsSubmitting(true)
+    setError("")
 
     try {
-      const response = await fetch('https://backendportfolio-5m1b.onrender.com/api/send-email', { // ✅ Exact match
+      console.log('Sending request with data:', formData)
+      
+      const response = await fetch(`${API_URL}/send-email`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'Accept': 'application/json' // Add this header
+          'Accept': 'application/json'
         },
         body: JSON.stringify(formData),
       });
 
-      // Handle non-JSON responses
-      const contentType = response.headers.get('content-type')
-      if (!contentType || !contentType.includes('application/json')) {
-        const text = await response.text()
-        throw new Error(`Invalid response format: ${text.slice(0, 100)}`)
-      }
-
-      const data = await response.json()
+      console.log('Full response:', response);
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
       
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to send message')
+      let responseData;
+      const contentType = response.headers.get('content-type');
+      
+      try {
+        if (contentType && contentType.includes('application/json')) {
+          responseData = await response.json();
+          console.log('Parsed JSON response:', responseData);
+        } else {
+          const text = await response.text();
+          console.error('Non-JSON response:', text);
+          throw new Error(`Server returned non-JSON response: ${text.slice(0, 100)}`);
+        }
+      } catch (parseError) {
+        console.error('Error parsing response:', parseError);
+        throw new Error('Failed to parse server response');
       }
 
-      setFormData({ name: '', email: '', subject: '', message: '' })
-      setShowSuccess(true)
-      setTimeout(() => setShowSuccess(false), 3000)
+      if (!response.ok) {
+        console.error('Server error response:', responseData);
+        throw new Error(responseData.message || 'Failed to send message');
+      }
+
+      console.log('Success response:', responseData);
+      setFormData({ name: '', email: '', subject: '', message: '' });
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
 
     } catch (error) {
       console.error('Full error details:', {
         error,
         formData,
         time: new Date().toISOString()
-      });
-      alert(error instanceof Error ? error.message : 'Failed to send message. Please try again.');
+      })
+      
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send message. Please try again.'
+      setError(errorMessage)
+      alert(errorMessage)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -140,6 +170,11 @@ export default function ContactSection() {
             onSubmit={handleSubmit}
             className="space-y-6 bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-xl"
           >
+            {error && (
+              <div className="text-red-500 bg-red-100/10 p-3 rounded-lg mb-4">
+                {error}
+              </div>
+            )}
             <div className="space-y-4 w-4/5">
               <div className="relative">
                 <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
