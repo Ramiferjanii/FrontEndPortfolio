@@ -18,7 +18,7 @@ export default function ContactSection() {
 
   // API URL based on environment
   const API_URL = import.meta.env.PROD 
-    ? 'https://portfolio-backend-5m1b.onrender.com'
+    ? 'https://backendportfolio-5m1b.onrender.com'
     : 'http://localhost:3001';
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -35,7 +35,8 @@ export default function ContactSection() {
     setError("")
 
     try {
-      console.log('Sending request with data:', formData)
+      console.log('Sending request to:', `${API_URL}/send-email`)
+      console.log('With data:', formData)
       
       const response = await fetch(`${API_URL}/send-email`, {
         method: 'POST',
@@ -46,51 +47,32 @@ export default function ContactSection() {
         body: JSON.stringify(formData),
       });
 
-      console.log('Full response:', response);
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-      
-      let responseData;
-      const contentType = response.headers.get('content-type');
-      
-      try {
-        if (contentType && contentType.includes('application/json')) {
-          responseData = await response.json();
-          console.log('Parsed JSON response:', responseData);
-        } else {
-          const text = await response.text();
-          console.error('Non-JSON response:', text);
-          throw new Error(`Server returned non-JSON response: ${text.slice(0, 100)}`);
-        }
-      } catch (parseError) {
-        console.error('Error parsing response:', parseError);
-        throw new Error('Failed to parse server response');
-      }
-
+      // First check if the response is ok
       if (!response.ok) {
-        console.error('Server error response:', responseData);
-        throw new Error(responseData.message || 'Failed to send message');
+        const errorText = await response.text();
+        console.error('Server error response:', errorText);
+        throw new Error(`Server error: ${response.status} ${response.statusText}`);
       }
 
+      // Then try to parse the JSON
+      const responseData = await response.json();
       console.log('Success response:', responseData);
+
+      // Clear form and show success message
       setFormData({ name: '', email: '', subject: '', message: '' });
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
 
     } catch (error) {
-      console.error('Full error details:', {
-        error,
-        formData,
-        time: new Date().toISOString()
-      })
-      
-      const errorMessage = error instanceof Error ? error.message : 'Failed to send message. Please try again.'
-      setError(errorMessage)
-      alert(errorMessage)
+      console.error('Error details:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to send message. Please try again.';
+      setError(errorMessage);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const SuccessMessage = () => (
     <AnimatePresence>
