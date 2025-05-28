@@ -55,16 +55,15 @@ export default function ContactSection() {
       const response = await fetch(`${API_URL}/send-email`, {
         method: 'POST',
         headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData),
-        credentials: 'include'
+        body: JSON.stringify(formData)
       });
 
       let responseData;
       try {
         const text = await response.text();
+        console.log('Raw response:', text);
         try {
           responseData = JSON.parse(text);
         } catch (e) {
@@ -76,7 +75,7 @@ export default function ContactSection() {
       }
 
       if (!response.ok) {
-        throw new Error(responseData.message || 'Server error');
+        throw new Error(responseData.message || `Server error: ${response.status}`);
       }
 
       console.log('Success response:', responseData);
