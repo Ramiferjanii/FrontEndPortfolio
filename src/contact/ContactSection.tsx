@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { FiUser, FiMail, FiBook, FiMessageSquare, FiCheckCircle } from "react-icons/fi"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -20,6 +20,20 @@ export default function ContactSection() {
   const API_URL = import.meta.env.PROD 
     ? 'https://backendportfolio-5m1b.onrender.com'
     : 'http://localhost:3001';
+
+  // Test API connection on component mount
+  useEffect(() => {
+    const testConnection = async () => {
+      try {
+        const response = await fetch(`${API_URL}/health`);
+        const data = await response.json();
+        console.log('API Health Check:', data);
+      } catch (error) {
+        console.error('API Connection Error:', error);
+      }
+    };
+    testConnection();
+  }, [API_URL]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -45,20 +59,27 @@ export default function ContactSection() {
           'Accept': 'application/json'
         },
         body: JSON.stringify(formData),
+        credentials: 'include'
       });
 
-      // First check if the response is ok
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Server error response:', errorText);
-        throw new Error(`Server error: ${response.status} ${response.statusText}`);
+      let responseData;
+      try {
+        const text = await response.text();
+        try {
+          responseData = JSON.parse(text);
+        } catch (e) {
+          console.error('Response is not JSON:', text);
+          throw new Error('Server returned invalid JSON');
+        }
+      } catch (e) {
+        throw new Error('Failed to read server response');
       }
 
-      // Then try to parse the JSON
-      const responseData = await response.json();
-      console.log('Success response:', responseData);
+      if (!response.ok) {
+        throw new Error(responseData.message || 'Server error');
+      }
 
-      // Clear form and show success message
+      console.log('Success response:', responseData);
       setFormData({ name: '', email: '', subject: '', message: '' });
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
