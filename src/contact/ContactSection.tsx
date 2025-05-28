@@ -49,9 +49,14 @@ export default function ContactSection() {
     setError("")
 
     try {
-      const url = new URL('/send-email', BASE_URL).toString();
-      console.log('Sending request to:', url);
-      console.log('With data:', formData);
+      const url = `${BASE_URL}/send-email`;
+      console.log('BASE_URL:', BASE_URL);
+      console.log('Full URL being used:', url);
+      console.log('Request details:', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
       
       const response = await fetch(url, {
         method: 'POST',
