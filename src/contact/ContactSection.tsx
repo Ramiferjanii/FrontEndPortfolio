@@ -25,7 +25,7 @@ export default function ContactSection() {
   useEffect(() => {
     const testConnection = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/health`);
+        const response = await fetch(`${BASE_URL}/health`);
         const data = await response.json();
         console.log('API Health Check:', data);
       } catch (error) {
@@ -49,7 +49,7 @@ export default function ContactSection() {
     setError("")
 
     try {
-      const url = `${BASE_URL}/api/send-email`;
+      const url = `${BASE_URL}/send-email`;
       console.log('Making request to:', {
         url,
         baseUrl: BASE_URL,
