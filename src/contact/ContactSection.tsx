@@ -17,7 +17,7 @@ export default function ContactSection() {
   const [error, setError] = useState("")
 
   // API URL based on environment
-  const API_URL = import.meta.env.PROD 
+  const BASE_URL = import.meta.env.PROD 
     ? 'https://backendportfolio-5m1b.onrender.com'
     : 'http://localhost:3001';
 
@@ -25,7 +25,7 @@ export default function ContactSection() {
   useEffect(() => {
     const testConnection = async () => {
       try {
-        const response = await fetch(`${API_URL}/health`);
+        const response = await fetch(`${BASE_URL}/health`);
         const data = await response.json();
         console.log('API Health Check:', data);
       } catch (error) {
@@ -33,7 +33,7 @@ export default function ContactSection() {
       }
     };
     testConnection();
-  }, [API_URL]);
+  }, [BASE_URL]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -49,10 +49,11 @@ export default function ContactSection() {
     setError("")
 
     try {
-      console.log('Sending request to:', `${API_URL}/send-email`)
-      console.log('With data:', formData)
+      const url = new URL('/send-email', BASE_URL).toString();
+      console.log('Sending request to:', url);
+      console.log('With data:', formData);
       
-      const response = await fetch(`${API_URL}/send-email`, {
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json'
