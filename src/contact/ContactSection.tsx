@@ -67,26 +67,23 @@ export default function ContactSection() {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
+        credentials: 'include'
       });
 
       console.log('Response status:', response.status);
       console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
+      const text = await response.text();
+      console.log('Raw response text:', text);
+
       let responseData;
       try {
-        const text = await response.text();
-        console.log('Raw response text:', text);
-        try {
-          responseData = JSON.parse(text);
-          console.log('Parsed response data:', responseData);
-        } catch (e) {
-          console.error('Failed to parse response as JSON:', text);
-          throw new Error('Server returned invalid JSON');
-        }
+        responseData = JSON.parse(text);
+        console.log('Parsed response data:', responseData);
       } catch (e) {
-        console.error('Failed to read response:', e);
-        throw new Error('Failed to read server response');
+        console.error('Failed to parse response as JSON:', text);
+        throw new Error('Server returned invalid JSON');
       }
 
       if (!response.ok) {
@@ -96,6 +93,10 @@ export default function ContactSection() {
           data: responseData
         });
         throw new Error(responseData.message || `Server error: ${response.status}`);
+      }
+
+      if (!responseData.success) {
+        throw new Error(responseData.message || 'Failed to send message');
       }
 
       console.log('Success response:', responseData);
