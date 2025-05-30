@@ -25,6 +25,7 @@ export default function ContactSection() {
   useEffect(() => {
     const testConnection = async () => {
       try {
+        console.log('Testing connection to:', `${BASE_URL}/health`);
         const response = await fetch(`${BASE_URL}/health`, {
           method: 'GET',
           headers: {
@@ -33,10 +34,18 @@ export default function ContactSection() {
           },
           credentials: 'include'
         });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         console.log('API Health Check:', data);
       } catch (error) {
         console.error('API Connection Error:', error);
+        if (error instanceof Error) {
+          console.error('Error details:', error.message);
+        }
       }
     };
     testConnection();
@@ -83,32 +92,15 @@ export default function ContactSection() {
       console.log('Response status:', response.status);
       console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
-      let responseData;
-      try {
-        const text = await response.text();
-        console.log('Raw response text:', text);
-        try {
-          responseData = JSON.parse(text);
-          console.log('Parsed response data:', responseData);
-        } catch {
-          console.error('Failed to parse response as JSON:', text);
-          throw new Error('Server returned invalid JSON');
-        }
-      } catch (e) {
-        console.error('Failed to read response:', e);
-        throw new Error('Failed to read server response');
-      }
-
       if (!response.ok) {
-        console.error('Request failed:', {
-          status: response.status,
-          statusText: response.statusText,
-          data: responseData
-        });
-        throw new Error(responseData.message || `Server error: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`Server error: ${response.status} - ${errorText}`);
       }
 
+      const responseData = await response.json();
       console.log('Success response:', responseData);
+      
       setFormData({ name: '', email: '', subject: '', message: '' });
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
