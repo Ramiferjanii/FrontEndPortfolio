@@ -25,7 +25,14 @@ export default function ContactSection() {
   useEffect(() => {
     const testConnection = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/health`);
+        const response = await fetch(`${BASE_URL}/health`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Origin': window.location.origin
+          },
+          credentials: 'include'
+        });
         const data = await response.json();
         console.log('API Health Check:', data);
       } catch (error) {
@@ -56,7 +63,8 @@ export default function ContactSection() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'Origin': window.location.origin
         },
         data: formData
       });
@@ -65,26 +73,30 @@ export default function ContactSection() {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'Origin': window.location.origin
         },
         body: JSON.stringify(formData),
-        mode: 'cors',
         credentials: 'include'
       });
 
       console.log('Response status:', response.status);
       console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
-      const text = await response.text();
-      console.log('Raw response text:', text);
-
       let responseData;
       try {
-        responseData = JSON.parse(text);
-        console.log('Parsed response data:', responseData);
+        const text = await response.text();
+        console.log('Raw response text:', text);
+        try {
+          responseData = JSON.parse(text);
+          console.log('Parsed response data:', responseData);
+        } catch {
+          console.error('Failed to parse response as JSON:', text);
+          throw new Error('Server returned invalid JSON');
+        }
       } catch (e) {
-        console.error('Failed to parse response as JSON:', text);
-        throw new Error('Server returned invalid JSON');
+        console.error('Failed to read response:', e);
+        throw new Error('Failed to read server response');
       }
 
       if (!response.ok) {
@@ -94,10 +106,6 @@ export default function ContactSection() {
           data: responseData
         });
         throw new Error(responseData.message || `Server error: ${response.status}`);
-      }
-
-      if (!responseData.success) {
-        throw new Error(responseData.message || 'Failed to send message');
       }
 
       console.log('Success response:', responseData);
