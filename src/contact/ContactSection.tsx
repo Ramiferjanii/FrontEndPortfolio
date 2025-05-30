@@ -68,6 +68,7 @@ export default function ContactSection() {
           'Accept': 'application/json'
         },
         body: JSON.stringify(formData),
+        mode: 'cors',
         credentials: 'include'
       });
 
