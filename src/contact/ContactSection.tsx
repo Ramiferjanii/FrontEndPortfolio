@@ -93,13 +93,21 @@ export default function ContactSection() {
       console.log('Response status:', response.status);
       console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error response:', errorText);
-        throw new Error(`Server error: ${response.status} - ${errorText}`);
+      const responseText = await response.text();
+      console.log('Raw response:', responseText);
+
+      let responseData;
+      try {
+        responseData = JSON.parse(responseText);
+      } catch (e) {
+        console.error('Failed to parse response as JSON:', responseText);
+        throw new Error('Server returned invalid JSON response');
       }
 
-      const responseData = await response.json();
+      if (!response.ok) {
+        throw new Error(responseData.message || `Server error: ${response.status}`);
+      }
+
       console.log('Success response:', responseData);
       
       if (responseData.success) {
