@@ -86,7 +86,8 @@ export default function ContactSection() {
           'Origin': window.location.origin
         },
         body: JSON.stringify(formData),
-        credentials: 'include'
+        credentials: 'include',
+        mode: 'cors'
       });
 
       console.log('Response status:', response.status);
@@ -101,9 +102,13 @@ export default function ContactSection() {
       const responseData = await response.json();
       console.log('Success response:', responseData);
       
-      setFormData({ name: '', email: '', subject: '', message: '' });
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
+      if (responseData.success) {
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+      } else {
+        throw new Error(responseData.message || 'Failed to send message');
+      }
 
     } catch (error) {
       console.error('Error details:', error);
