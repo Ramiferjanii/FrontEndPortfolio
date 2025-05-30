@@ -39,7 +39,8 @@ export const sendEmail = async (formData: {
   message: string;
 }) => {
   const url = `${BASE_URL}/send-email`;
-  console.log('Making request to:', {
+  
+  console.log('Making email request:', {
     url,
     baseUrl: BASE_URL,
     method: 'POST',
@@ -51,35 +52,40 @@ export const sendEmail = async (formData: {
     data: formData
   });
   
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Origin': window.location.origin
-    },
-    body: JSON.stringify(formData),
-    credentials: 'include',
-    mode: 'cors'
-  });
-
-  console.log('Response status:', response.status);
-  console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-
-  const responseText = await response.text();
-  console.log('Raw response:', responseText);
-
-  let responseData;
   try {
-    responseData = JSON.parse(responseText);
-  } catch (e) {
-    console.error('Failed to parse response as JSON:', responseText);
-    throw new Error('Server returned invalid JSON response');
-  }
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Origin': window.location.origin
+      },
+      body: JSON.stringify(formData),
+      credentials: 'include',
+      mode: 'cors'
+    });
 
-  if (!response.ok) {
-    throw new Error(responseData.message || `Server error: ${response.status}`);
-  }
+    console.log('Response status:', response.status);
+    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
-  return responseData;
+    const responseText = await response.text();
+    console.log('Raw response:', responseText);
+
+    let responseData;
+    try {
+      responseData = JSON.parse(responseText);
+    } catch (e) {
+      console.error('Failed to parse response as JSON:', responseText);
+      throw new Error('Server returned invalid JSON response');
+    }
+
+    if (!response.ok) {
+      throw new Error(responseData.message || `Server error: ${response.status}`);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error('Error in sendEmail:', error);
+    throw error;
+  }
 }; 
