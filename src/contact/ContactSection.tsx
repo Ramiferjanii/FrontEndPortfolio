@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react"
 import { FiUser, FiMail, FiBook, FiMessageSquare, FiCheckCircle } from "react-icons/fi"
 import { motion, AnimatePresence } from "framer-motion"
+import { testConnection, sendEmail } from '../utils/api';
 
 export default function ContactSection() {
   const [formData, setFormData] = useState({
@@ -16,42 +17,12 @@ export default function ContactSection() {
   const [showSuccess, setShowSuccess] = useState(false)
   const [error, setError] = useState("")
 
-  // API URL based on environment
-  const BASE_URL = import.meta.env.PROD 
-    ? 'https://backendportfolio-5m1b.onrender.com'
-    : 'http://localhost:10000';
-
   // Test API connection on component mount
   useEffect(() => {
-    const testConnection = async () => {
-      try {
-        const url = `${BASE_URL}/health`;
-        console.log('Testing connection to:', url);
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'Origin': window.location.origin
-          },
-          credentials: 'include',
-          mode: 'cors'
-        });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('API Health Check:', data);
-      } catch (error) {
-        console.error('API Connection Error:', error);
-        if (error instanceof Error) {
-          console.error('Error details:', error.message);
-        }
-      }
-    };
-    testConnection();
-  }, [BASE_URL]);
+    testConnection().catch(error => {
+      console.error('Failed to connect to API:', error);
+    });
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -67,49 +38,7 @@ export default function ContactSection() {
     setError("")
 
     try {
-      const url = `${BASE_URL}/send-email`;
-      console.log('Making request to:', {
-        url,
-        baseUrl: BASE_URL,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Origin': window.location.origin
-        },
-        data: formData
-      });
-      
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Origin': window.location.origin
-        },
-        body: JSON.stringify(formData),
-        credentials: 'include',
-        mode: 'cors'
-      });
-
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-
-      const responseText = await response.text();
-      console.log('Raw response:', responseText);
-
-      let responseData;
-      try {
-        responseData = JSON.parse(responseText);
-      } catch (e) {
-        console.error('Failed to parse response as JSON:', responseText);
-        throw new Error('Server returned invalid JSON response');
-      }
-
-      if (!response.ok) {
-        throw new Error(responseData.message || `Server error: ${response.status}`);
-      }
-
+      const responseData = await sendEmail(formData);
       console.log('Success response:', responseData);
       
       if (responseData.success) {
@@ -119,7 +48,6 @@ export default function ContactSection() {
       } else {
         throw new Error(responseData.message || 'Failed to send message');
       }
-
     } catch (error) {
       console.error('Error details:', error);
       const errorMessage = error instanceof Error 
