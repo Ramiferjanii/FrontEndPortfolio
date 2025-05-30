@@ -19,7 +19,7 @@ export default function ContactSection() {
   // API URL based on environment
   const BASE_URL = import.meta.env.PROD 
     ? 'https://backendportfolio-5m1b.onrender.com'
-    : 'http://localhost:3001';
+    : 'http://localhost:10000';
 
   // Test API connection on component mount
   useEffect(() => {
