@@ -25,14 +25,16 @@ export default function ContactSection() {
   useEffect(() => {
     const testConnection = async () => {
       try {
-        console.log('Testing connection to:', `${BASE_URL}/health`);
-        const response = await fetch(`${BASE_URL}/health`, {
+        const url = `${BASE_URL}/health`;
+        console.log('Testing connection to:', url);
+        const response = await fetch(url, {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
             'Origin': window.location.origin
           },
-          credentials: 'include'
+          credentials: 'include',
+          mode: 'cors'
         });
         
         if (!response.ok) {
