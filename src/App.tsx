@@ -91,7 +91,7 @@ const App = () => {
             <div className="fixed ml-56 md:w-auto h-[95vh]">
               <div className='md:box-decoration-slice flex-col justify-center place-items-center'>
                 <TiltedCard
-                  imageSrc="https://media-hosting.imagekit.io/911cdc4e42bd449b/ff8106e2-23fa-4111-a49f-7d4494fe4ed5.jpg?Expires=1839083417&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=u~lERxYp~t2YSCSQiyN3ewvnpPmGMGnonXXyTXiM44fOrSDWzCDaYQIGoCSWLD4lqdYeOj167l5lcAHGLOMExgmQmEFXca05YxtSn2umn9LACO3531ns0SiSCt3oQpN-FlP78Quv-Uo7tDolzwIB8eO~A981Y6pFVvyq8pGg0k4FQ0aezMqc5kKh6S~957dkQQDCq2JWAfis3DOIUVfh3E4jGeG5kk97gSkIyjDzkLVKsvhPS-ZctPsAF6IzKy~cUMCXbyoSRNLzQXGfo5QFSCp7tm2ca5NUhQ0bC3KmRNjBbSGvlBJlIObY0bfPexG5novOsvfjVV3uEGecJEQGAg__" 
+                  imageSrc="public/ff8106e2-23fa-4111-a49f-7d4494fe4ed5.jpg" 
                   altText="Rami Ben Ferjani"
                   captionText="Rami Ben Ferjani"
                   containerHeight="300px"
