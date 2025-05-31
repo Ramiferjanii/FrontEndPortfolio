@@ -14,8 +14,7 @@ export const testConnection = async () => {
     const response = await fetch(url, {
       method: 'GET',
       headers: defaultHeaders,
-      mode: 'cors',
-      credentials: 'omit'
+      mode: 'cors'
     });
     
     if (!response.ok) {
@@ -55,8 +54,7 @@ export const sendEmail = async (formData: {
       method: 'POST',
       headers: defaultHeaders,
       body: JSON.stringify(formData),
-      mode: 'cors',
-      credentials: 'omit'
+      mode: 'cors'
     });
 
     console.log('Response status:', response.status);
