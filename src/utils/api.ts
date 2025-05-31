@@ -4,8 +4,7 @@ const BASE_URL = import.meta.env.PROD
 
 const defaultHeaders = {
   'Content-Type': 'application/json',
-  'Accept': 'application/json',
-  'Origin': window.location.origin
+  'Accept': 'application/json'
 };
 
 export const testConnection = async () => {
@@ -15,7 +14,8 @@ export const testConnection = async () => {
     const response = await fetch(url, {
       method: 'GET',
       headers: defaultHeaders,
-      mode: 'cors'
+      mode: 'cors',
+      credentials: 'omit'
     });
     
     if (!response.ok) {
@@ -55,7 +55,8 @@ export const sendEmail = async (formData: {
       method: 'POST',
       headers: defaultHeaders,
       body: JSON.stringify(formData),
-      mode: 'cors'
+      mode: 'cors',
+      credentials: 'omit'
     });
 
     console.log('Response status:', response.status);
