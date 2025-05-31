@@ -2,17 +2,19 @@ const BASE_URL = import.meta.env.PROD
   ? 'https://backendportfolio-5m1b.onrender.com'
   : 'http://localhost:10000';
 
+const defaultHeaders = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Origin': window.location.origin
+};
+
 export const testConnection = async () => {
   try {
     const url = `${BASE_URL}/health`;
     console.log('Testing connection to:', url);
     const response = await fetch(url, {
       method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Origin': window.location.origin
-      },
-      credentials: 'include',
+      headers: defaultHeaders,
       mode: 'cors'
     });
     
@@ -44,24 +46,15 @@ export const sendEmail = async (formData: {
     url,
     baseUrl: BASE_URL,
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Origin': window.location.origin
-    },
+    headers: defaultHeaders,
     data: formData
   });
   
   try {
     const response = await fetch(url, {
       method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Origin': window.location.origin
-      },
+      headers: defaultHeaders,
       body: JSON.stringify(formData),
-      credentials: 'include',
       mode: 'cors'
     });
 
