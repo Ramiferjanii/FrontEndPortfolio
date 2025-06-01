@@ -129,7 +129,7 @@ const App = () => {
             <div className="w-full md:w-auto md:fixed md:ml-14 md:h-[95vh] mb-8 md:mb-0">
               <div className='flex flex-col items-center justify-center'>
                 <TiltedCard
-                  imageSrc="public/ff8106e2-23fa-4111-a49f-7d4494fe4ed5.jpg" 
+                  imageSrc="/ff8106e2-23fa-4111-a49f-7d4494fe4ed5.jpg" 
                   altText="Rami Ben Ferjani"
                   captionText="Rami Ben Ferjani"
                   containerHeight="250px"
