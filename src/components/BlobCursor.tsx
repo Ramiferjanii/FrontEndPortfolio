@@ -1,21 +1,7 @@
 "use client";
 
-import { useTrail, animated, SpringValue } from "@react-spring/web";
+import { motion, useAnimation, useMotionValue, useTransform } from "framer-motion";
 import { useRef, useEffect, useCallback } from "react";
-
-const fast = { tension: 1200, friction: 40 };
-const slow = { mass: 10, tension: 200, friction: 50 };
-const trans = (x: number, y: number) =>
-  `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`;
-
-interface AnimatedStyle {
-  transform: SpringValue<string>;
-  width: string;
-  height: string;
-  willChange: string;
-  borderRadius: string;
-  backgroundColor: string;
-}
 
 export default function BlobCursor({
   blobType = "circle",
@@ -24,12 +10,9 @@ export default function BlobCursor({
   blobType?: string;
   fillColor?: string;
 }) {
-  const [trail, api] = useTrail(3, (i) => ({
-    xy: [0, 0],
-    config: i === 0 ? fast : slow,
-  }));
-
   const ref = useRef<HTMLDivElement>(null);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
 
   const updatePosition = useCallback(() => {
     if (ref.current) {
@@ -43,7 +26,8 @@ export default function BlobCursor({
     const { left, top } = updatePosition();
     const x = "clientX" in e ? e.clientX : e.touches[0].clientX;
     const y = "clientY" in e ? e.clientY : e.touches[0].clientY;
-    api.start({ xy: [x - left, y - top] });
+    mouseX.set(x - left);
+    mouseY.set(y - top);
   };
 
   useEffect(() => {
@@ -98,32 +82,41 @@ export default function BlobCursor({
         onMouseMove={(e) => handleMove(e as unknown as MouseEvent)}
         onTouchMove={(e) => handleMove(e as unknown as TouchEvent)}
       >
-        {trail.map((props, index) => (
-          <animated.div
+        {sizes.map((size, index) => (
+          <motion.div
             key={index}
             className="absolute opacity-60 shadow-[10px_10px_5px_0_rgba(0,0,0,0.75)]"
             style={{
-              transform: props.xy.to(trans),
-              width: `${sizes[index].width}px`,
-              height: `${sizes[index].height}px`,
+              x: mouseX,
+              y: mouseY,
+              width: size.width,
+              height: size.height,
               willChange: "transform",
               borderRadius: blobType === "circle" ? "50%" : "0%",
               backgroundColor: fillColor,
-            } as AnimatedStyle}
+            }}
+            animate={{
+              scale: [1, 1.1, 1],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              delay: index * 0.2,
+            }}
           >
             <div
               className="pointer-events-none"
               style={{
                 position: "absolute",
-                top: `${pseudoStyles[index].top}px`,
-                left: `${pseudoStyles[index].left}px`,
-                width: `${pseudoStyles[index].width}px`,
-                height: `${pseudoStyles[index].height}px`,
+                top: pseudoStyles[index].top,
+                left: pseudoStyles[index].left,
+                width: pseudoStyles[index].width,
+                height: pseudoStyles[index].height,
                 borderRadius: "50%",
                 background: "rgba(255,255,255,0.8)",
               }}
             />
-          </animated.div>
+          </motion.div>
         ))}
       </div>
     </div>
