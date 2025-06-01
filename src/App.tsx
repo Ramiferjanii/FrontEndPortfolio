@@ -22,6 +22,8 @@ import { FaReact } from "react-icons/fa";
 import Click from './components/button/Click';
 import ContactSection from './contact/ContactSection';
 import Footer from './components/Footer';
+import { motion } from 'framer-motion';
+import { FaArrowUp } from 'react-icons/fa';
 
 
 const App = () => {
@@ -32,7 +34,8 @@ const App = () => {
     { icon: <FaFacebook size={18} />, label: 'Facebook', onClick: () => window.open('https://www.facebook.com/share/15HVuTYGv6/', '_blank') },
   ];
   const [isLoading, setIsLoading] = useState(true);
-  // Removed duplicate declaration of containerRef
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   useEffect(() => {
     // Simulate loading of assets/API calls
@@ -40,13 +43,56 @@ const App = () => {
       setIsLoading(false);
     }, 3000);
 
-    return () => clearTimeout(timer);
+    const handleScroll = () => {
+      const totalScroll = document.documentElement.scrollTop;
+      const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scroll = `${totalScroll / windowHeight}`;
+      setScrollProgress(Number(scroll));
+      setShowBackToTop(totalScroll > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   return (
     <>
+      {/* Scroll Progress Bar */}
+      <div className="fixed top-0 left-0 w-full h-1 bg-gray-800 z-50">
+        <motion.div
+          className="h-full bg-blue-500"
+          style={{ width: `${scrollProgress * 100}%` }}
+          transition={{ duration: 0.1 }}
+        />
+      </div>
+
+      {/* Back to Top Button */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            onClick={scrollToTop}
+            className="fixed bottom-8 right-8 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition-colors duration-300 z-50"
+          >
+            <FaArrowUp size={20} />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {isLoading && <Loading key="loading-screen" />}
       </AnimatePresence>

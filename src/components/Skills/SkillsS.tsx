@@ -61,10 +61,14 @@ export default function SkillsS() {
       (entries) => {
         if (entries[0].isIntersecting) {
           setIsVisible(true)
-          observer.disconnect()
+        } else {
+          setIsVisible(false)
         }
       },
-      { threshold: 0.1 },
+      { 
+        threshold: 0.1,
+        rootMargin: "0px 0px -100px 0px"
+      }
     )
 
     if (skillsRef.current) {
@@ -77,20 +81,20 @@ export default function SkillsS() {
   return (
     <motion.section 
       ref={skillsRef} 
-      className="py-5 border-b border-gray-700"
+      className="py-5 border-b border-gray-700 px-4 md:px-0"
       initial="hidden"
       animate={isVisible ? "visible" : "hidden"}
       variants={containerVariants}
     >
       <motion.h1 
-        className="relative pb-3 mb-5 text-3xl font-bold text-[#f2f2f2] before:absolute before:content-[''] before:w-[10px] before:h-[10px] before:bottom-[-4px] before:left-0 before:border-2 before:border-[#f2f2f2] before:rounded-[10px] after:absolute after:content-[''] after:w-[50px] after:h-[2px] after:bottom-0 after:left-[15px] after:rounded-[2px] after:bg-[#f2f2f2]"
+        className="relative pb-3 mb-5 text-2xl md:text-3xl font-bold text-[#f2f2f2] before:absolute before:content-[''] before:w-[10px] before:h-[10px] before:bottom-[-4px] before:left-0 before:border-2 before:border-[#f2f2f2] before:rounded-[10px] after:absolute after:content-[''] after:w-[50px] after:h-[2px] after:bottom-0 after:left-[15px] after:rounded-[2px] after:bg-[#f2f2f2]"
         variants={itemVariants}
       >
         Skills
       </motion.h1>
 
       <motion.div 
-        className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6"
         variants={containerVariants}
       >
         {skills.map((skill, index) => (
@@ -100,8 +104,8 @@ export default function SkillsS() {
             variants={itemVariants}
           >
             <div className="flex justify-between mb-2">
-              <p className="mb-2">{skill.name}</p>
-              <p className="mb-2">
+              <p className="text-sm md:text-base font-medium">{skill.name}</p>
+              <p className="text-sm md:text-base">
                 <CountUp
                   from={0}
                   to={skill.percentage}
@@ -112,9 +116,9 @@ export default function SkillsS() {
                 />%
               </p>
             </div>
-            <div className="h-[5px] overflow-hidden bg-[#314355]">
+            <div className="h-[5px] overflow-hidden bg-[#314355] rounded-full">
               <motion.div
-                className={`h-full ${getColorClass(skill.percentage)}`}
+                className={`h-full ${getColorClass(skill.percentage)} rounded-full`}
                 role="progressbar"
                 variants={progressVariants}
                 custom={skill.percentage}
