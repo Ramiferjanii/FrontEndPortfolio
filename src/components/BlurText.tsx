@@ -69,7 +69,10 @@ const BlurText: React.FC<BlurTextProps> = ({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setInView(true);
+          setTimeout(() => {
+            setInView(true);
+          }, 100);
+          
           if (ref.current) {
             observer.unobserve(ref.current);
           }
@@ -77,9 +80,7 @@ const BlurText: React.FC<BlurTextProps> = ({
       },
       { 
         threshold, 
-        rootMargin,
-        // Add a small delay to ensure smooth animation start
-        delay: 100
+        rootMargin
       }
     );
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useAnimation, useMotionValue, useTransform } from "framer-motion";
+import { motion, useMotionValue } from "framer-motion";
 import { useRef, useEffect, useCallback } from "react";
 
 export default function BlobCursor({
