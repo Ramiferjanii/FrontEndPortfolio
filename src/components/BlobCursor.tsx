@@ -1,12 +1,21 @@
 "use client";
 
-import { useTrail, animated } from "@react-spring/web";
+import { useTrail, animated, SpringValue } from "@react-spring/web";
 import { useRef, useEffect, useCallback } from "react";
 
 const fast = { tension: 1200, friction: 40 };
 const slow = { mass: 10, tension: 200, friction: 50 };
 const trans = (x: number, y: number) =>
   `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`;
+
+interface AnimatedStyle {
+  transform: SpringValue<string>;
+  width: string;
+  height: string;
+  willChange: string;
+  borderRadius: string;
+  backgroundColor: string;
+}
 
 export default function BlobCursor({
   blobType = "circle",
@@ -49,16 +58,16 @@ export default function BlobCursor({
 
   // Sizes for each animated div
   const sizes = [
-    { width: 30, height: 30 },  // was 60
-  { width: 60, height: 60 },  // was 125
-  { width: 40, height: 40 } 
+    { width: 30, height: 30 },
+    { width: 60, height: 60 },
+    { width: 40, height: 40 } 
   ];
 
   // Styles for pseudo-element replacements
   const pseudoStyles = [
-    { top: 10, left: 10, width: 10, height: 10 },  // was 20
-  { top: 15, left: 15, width: 15, height: 15 },  // was 35
-  { top: 12, left: 12, width: 12, height: 12 }
+    { top: 10, left: 10, width: 10, height: 10 },
+    { top: 15, left: 15, width: 15, height: 15 },
+    { top: 12, left: 12, width: 12, height: 12 }
   ];
 
   return (
@@ -100,9 +109,8 @@ export default function BlobCursor({
               willChange: "transform",
               borderRadius: blobType === "circle" ? "50%" : "0%",
               backgroundColor: fillColor,
-            }}
+            } as AnimatedStyle}
           >
-            {/* Replacing the ::after pseudo-element */}
             <div
               className="pointer-events-none"
               style={{
