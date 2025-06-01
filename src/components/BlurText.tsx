@@ -35,18 +35,34 @@ const BlurText: React.FC<BlurTextProps> = ({
   const ref = useRef<HTMLParagraphElement>(null);
   const animatedCount = useRef(0);
 
-  // Default animations based on direction
+  // Enhanced animations with better performance
   const defaultFrom: Record<string, any> = direction === 'top'
-    ? { filter: 'blur(10px)', opacity: 0, transform: 'translate3d(0,-50px,0)' }
-    : { filter: 'blur(10px)', opacity: 0, transform: 'translate3d(0,50px,0)' };
+    ? { 
+        filter: 'blur(10px)', 
+        opacity: 0, 
+        transform: 'translate3d(0,-30px,0)',
+        willChange: 'transform, filter, opacity'
+      }
+    : { 
+        filter: 'blur(10px)', 
+        opacity: 0, 
+        transform: 'translate3d(0,30px,0)',
+        willChange: 'transform, filter, opacity'
+      };
   
   const defaultTo: Record<string, any>[] = [
     {
       filter: 'blur(5px)',
       opacity: 0.5,
-      transform: direction === 'top' ? 'translate3d(0,5px,0)' : 'translate3d(0,-5px,0)',
+      transform: direction === 'top' ? 'translate3d(0,10px,0)' : 'translate3d(0,-10px,0)',
+      willChange: 'transform, filter, opacity'
     },
-    { filter: 'blur(0px)', opacity: 1, transform: 'translate3d(0,0,0)' },
+    { 
+      filter: 'blur(0px)', 
+      opacity: 1, 
+      transform: 'translate3d(0,0,0)',
+      willChange: 'transform, filter, opacity'
+    },
   ];
 
   useEffect(() => {
@@ -59,7 +75,12 @@ const BlurText: React.FC<BlurTextProps> = ({
           }
         }
       },
-      { threshold, rootMargin }
+      { 
+        threshold, 
+        rootMargin,
+        // Add a small delay to ensure smooth animation start
+        delay: 100
+      }
     );
 
     if (ref.current) {
@@ -85,16 +106,29 @@ const BlurText: React.FC<BlurTextProps> = ({
         }
         : animationFrom || defaultFrom,
       delay: i * delay,
-      config: { easing: easing as any },
+      config: { 
+        tension: 280,
+        friction: 20,
+        mass: 1,
+        easing: easing as any,
+      },
     }))
   );
 
   return (
-    <p ref={ref} className={`blur-text ${className} flex flex-wrap`}>
+    <p 
+      ref={ref} 
+      className={`blur-text ${className} flex flex-wrap justify-center items-center`}
+      style={{ perspective: '1000px' }}
+    >
       {springs.map((props, index) => (
         <AnimatedSpan
           key={index}
-          style={props}
+          style={{
+            ...props,
+            backfaceVisibility: 'hidden',
+            WebkitFontSmoothing: 'antialiased',
+          }}
           className="inline-block will-change-[transform,filter,opacity]"
         >
           {elements[index] === ' ' ? '\u00A0' : elements[index]}

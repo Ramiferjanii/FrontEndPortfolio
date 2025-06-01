@@ -13,8 +13,7 @@ export const testConnection = async () => {
     console.log('Testing connection to:', url);
     const response = await fetch(url, {
       method: 'GET',
-      headers: defaultHeaders,
-      mode: 'cors'
+      headers: defaultHeaders
     });
     
     if (!response.ok) {
@@ -53,8 +52,7 @@ export const sendEmail = async (formData: {
     const response = await fetch(url, {
       method: 'POST',
       headers: defaultHeaders,
-      body: JSON.stringify(formData),
-      mode: 'cors'
+      body: JSON.stringify(formData)
     });
 
     console.log('Response status:', response.status);

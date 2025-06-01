@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface TrueFocusProps {
     sentence?: string;
@@ -33,16 +33,17 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
     const containerRef = useRef<HTMLDivElement | null>(null);
     const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
     const [focusRect, setFocusRect] = useState<FocusRect>({ x: 0, y: 0, width: 0, height: 0 });
+    const [isHovered, setIsHovered] = useState<boolean>(false);
 
     useEffect(() => {
-        if (!manualMode) {
+        if (!manualMode && !isHovered) {
             const interval = setInterval(() => {
                 setCurrentIndex((prev) => (prev + 1) % words.length);
             }, (animationDuration + pauseBetweenAnimations) * 1000);
 
             return () => clearInterval(interval);
         }
-    }, [manualMode, animationDuration, pauseBetweenAnimations, words.length]);
+    }, [manualMode, animationDuration, pauseBetweenAnimations, words.length, isHovered]);
 
     useEffect(() => {
         if (currentIndex === null || currentIndex === -1) return;
@@ -60,6 +61,7 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
     }, [currentIndex, words.length]);
 
     const handleMouseEnter = (index: number) => {
+        setIsHovered(true);
         if (manualMode) {
             setLastActiveIndex(index);
             setCurrentIndex(index);
@@ -67,88 +69,133 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
     };
 
     const handleMouseLeave = () => {
+        setIsHovered(false);
         if (manualMode) {
             setCurrentIndex(lastActiveIndex!);
         }
     };
 
     return (
-        <div
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
             className="relative flex gap-4 justify-center items-center flex-wrap"
             ref={containerRef}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
         >
             {words.map((word, index) => {
                 const isActive = index === currentIndex;
                 return (
-                    <span
+                    <motion.span
                         key={index}
                         ref={(el) => { wordRefs.current[index] = el; }}
-                        className="relative text-[3rem] font-black cursor-pointer"
-                        style={{
-                            filter: manualMode
-                                ? isActive
-                                    ? `blur(0px)`
-                                    : `blur(${blurAmount}px)`
-                                : isActive
-                                    ? `blur(0px)`
-                                    : `blur(${blurAmount}px)`,
-                            transition: `filter ${animationDuration}s ease`,
-                        } as React.CSSProperties}
+                        className="relative text-[2.5rem] md:text-[3rem] font-black cursor-pointer"
+                        initial={{ filter: `blur(${blurAmount}px)`, opacity: 0.5 }}
+                        animate={{
+                            filter: isActive ? 'blur(0px)' : `blur(${blurAmount}px)`,
+                            opacity: isActive ? 1 : 0.5,
+                            scale: isActive ? 1.05 : 1,
+                        }}
+                        transition={{
+                            duration: animationDuration,
+                            ease: "easeInOut",
+                        }}
                         onMouseEnter={() => handleMouseEnter(index)}
                         onMouseLeave={handleMouseLeave}
+                        style={{
+                            willChange: 'transform, filter, opacity',
+                            WebkitFontSmoothing: 'antialiased',
+                        }}
                     >
                         {word}
-                    </span>
+                    </motion.span>
                 );
             })}
 
-            <motion.div
-                className="absolute top-0 left-0 pointer-events-none box-border border-0"
-                animate={{
-                    x: focusRect.x,
-                    y: focusRect.y,
-                    width: focusRect.width,
-                    height: focusRect.height,
-                    opacity: currentIndex >= 0 ? 1 : 0,
-                }}
-                transition={{
-                    duration: animationDuration,
-                }}
-                style={{
-                    "--border-color": borderColor,
-                    "--glow-color": glowColor,
-                } as React.CSSProperties}
-            >
-                <span
-                    className="absolute w-4 h-4 border-[3px] rounded-[3px] top-[-10px] left-[-10px] border-r-0 border-b-0"
-                    style={{
-                        borderColor: "var(--border-color)",
-                        filter: "drop-shadow(0 0 4px var(--border-color))",
-                    }}
-                ></span>
-                <span
-                    className="absolute w-4 h-4 border-[3px] rounded-[3px] top-[-10px] right-[-10px] border-l-0 border-b-0"
-                    style={{
-                        borderColor: "var(--border-color)",
-                        filter: "drop-shadow(0 0 4px var(--border-color))",
-                    }}
-                ></span>
-                <span
-                    className="absolute w-4 h-4 border-[3px] rounded-[3px] bottom-[-10px] left-[-10px] border-r-0 border-t-0"
-                    style={{
-                        borderColor: "var(--border-color)",
-                        filter: "drop-shadow(0 0 4px var(--border-color))",
-                    }}
-                ></span>
-                <span
-                    className="absolute w-4 h-4 border-[3px] rounded-[3px] bottom-[-10px] right-[-10px] border-l-0 border-t-0"
-                    style={{
-                        borderColor: "var(--border-color)",
-                        filter: "drop-shadow(0 0 4px var(--border-color))",
-                    }}
-                ></span>
-            </motion.div>
-        </div>
+            <AnimatePresence>
+                {currentIndex >= 0 && (
+                    <motion.div
+                        className="absolute top-0 left-0 pointer-events-none box-border border-0"
+                        initial={{ opacity: 0 }}
+                        animate={{
+                            x: focusRect.x,
+                            y: focusRect.y,
+                            width: focusRect.width,
+                            height: focusRect.height,
+                            opacity: 1,
+                        }}
+                        exit={{ opacity: 0 }}
+                        transition={{
+                            duration: animationDuration,
+                            ease: "easeInOut",
+                        }}
+                        style={{
+                            "--border-color": borderColor,
+                            "--glow-color": glowColor,
+                        } as React.CSSProperties}
+                    >
+                        <motion.span
+                            className="absolute w-4 h-4 border-[3px] rounded-[3px] top-[-10px] left-[-10px] border-r-0 border-b-0"
+                            style={{
+                                borderColor: "var(--border-color)",
+                                filter: "drop-shadow(0 0 4px var(--border-color))",
+                            }}
+                            animate={{
+                                scale: isHovered ? 1.1 : 1,
+                            }}
+                            transition={{
+                                duration: 0.3,
+                                ease: "easeInOut",
+                            }}
+                        />
+                        <motion.span
+                            className="absolute w-4 h-4 border-[3px] rounded-[3px] top-[-10px] right-[-10px] border-l-0 border-b-0"
+                            style={{
+                                borderColor: "var(--border-color)",
+                                filter: "drop-shadow(0 0 4px var(--border-color))",
+                            }}
+                            animate={{
+                                scale: isHovered ? 1.1 : 1,
+                            }}
+                            transition={{
+                                duration: 0.3,
+                                ease: "easeInOut",
+                            }}
+                        />
+                        <motion.span
+                            className="absolute w-4 h-4 border-[3px] rounded-[3px] bottom-[-10px] left-[-10px] border-r-0 border-t-0"
+                            style={{
+                                borderColor: "var(--border-color)",
+                                filter: "drop-shadow(0 0 4px var(--border-color))",
+                            }}
+                            animate={{
+                                scale: isHovered ? 1.1 : 1,
+                            }}
+                            transition={{
+                                duration: 0.3,
+                                ease: "easeInOut",
+                            }}
+                        />
+                        <motion.span
+                            className="absolute w-4 h-4 border-[3px] rounded-[3px] bottom-[-10px] right-[-10px] border-l-0 border-t-0"
+                            style={{
+                                borderColor: "var(--border-color)",
+                                filter: "drop-shadow(0 0 4px var(--border-color))",
+                            }}
+                            animate={{
+                                scale: isHovered ? 1.1 : 1,
+                            }}
+                            transition={{
+                                duration: 0.3,
+                                ease: "easeInOut",
+                            }}
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </motion.div>
     );
 };
 
