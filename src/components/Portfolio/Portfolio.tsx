@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import Image from "next/image"
 import { Plus, Laptop, Smartphone } from "lucide-react"
 
 export default function Portfolio() {
@@ -54,7 +53,7 @@ export default function Portfolio() {
           {filteredItems.map((item) => (
             <div key={item.id} className="mb-4 relative group">
               <div className="relative overflow-hidden mb-2">
-                <Image
+                <img
                   className="w-full h-auto"
                   src={item.image || "/placeholder.svg"}
                   alt={`Portfolio ${item.id}`}
