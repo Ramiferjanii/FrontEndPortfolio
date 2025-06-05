@@ -24,6 +24,8 @@ import ContactSection from './contact/ContactSection';
 import Footer from './components/Footer';
 import { motion } from 'framer-motion';
 import { FaArrowUp } from 'react-icons/fa';
+import { AiOutlinePython } from "react-icons/ai";
+
 
 
 const App = () => {
@@ -124,9 +126,9 @@ const App = () => {
           </div>
 
           {/* Foreground Content */}
-          <div className="flex flex-col md:flex-row p-4 text-white relative z-1">
+          <div className="flex flex-col md:flex-row p-4 md:p-6 text-white relative z-1">
             {/* Sidebar - Fixed on desktop, scrollable on mobile */}
-            <div className="w-full md:w-auto md:fixed md:ml-14 md:h-[95vh] mb-8 md:mb-0">
+            <div className="w-full md:w-auto md:fixed md:ml-14 md:h-[95vh] mb-6 md:mb-0">
               <div className='flex flex-col items-center justify-center'>
                 <TiltedCard
                   imageSrc="/ff8106e2-23fa-4111-a49f-7d4494fe4ed5.jpg" 
@@ -144,13 +146,13 @@ const App = () => {
                   overlayContent={null}
                 />
 
-                <div className="my-8 md:my-[20%] text-center">
+                <div className="my-6 md:my-[20%] text-center">
                   <BlurText
                     text="Rami Ben Ferjani"
                     delay={150}
                     animateBy="words"
                     direction="top"
-                    className="text-2xl mt-10 text-center mb-5"
+                    className="text-2xl md:text-3xl mt-8 md:mt-10 text-center mb-4 md:mb-6"
                   />
                   <Skills />
 
@@ -172,22 +174,23 @@ const App = () => {
                 />
               </div>
               
-              <div className='w-full flex flex-col'>
-                <div className="relative flex flex-col md:flex-row gap-6" ref={containerRef}>
+              <div className='w-full flex flex-col px-4 md:px-6'>
+                <div className="relative flex flex-col md:flex-row gap-6 md:gap-8" ref={containerRef}>
                   <VariableProximity/>
                 </div>
                 <SkillsS/>
                 <Education/>
                 <Services/>
                 
-                <h1 className="relative mt-5 pb-3 mb-5 text-2xl md:text-3xl font-bold text-[#f2f2f2] before:absolute before:content-[''] before:w-[10px] before:h-[10px] before:bottom-[-4px] before:left-0 before:border-2 before:border-[#f2f2f2] before:rounded-[10px] after:absolute after:content-[''] after:w-[50px] after:h-[2px] after:bottom-0 after:left-[15px] after:rounded-[2px] after:bg-[#f2f2f2]">
+                <h1 className="relative mt-6 md:mt-8 pb-3 md:pb-4 mb-4 md:mb-6 text-2xl md:text-4xl font-bold text-[#f2f2f2] before:absolute before:content-[''] before:w-[12px] md:before:w-[15px] before:h-[12px] md:before:h-[15px] before:bottom-[-4px] before:left-0 before:border-2 before:border-[#f2f2f2] before:rounded-[10px] after:absolute after:content-[''] after:w-[60px] md:after:w-[70px] after:h-[2px] after:bottom-0 after:left-[15px] md:after:left-[20px] after:rounded-[2px] after:bg-[#f2f2f2]">
                   Projects
                 </h1>
 
-                <div className="flex flex-col md:flex-row gap-6">
+                <div className="flex flex-wrap justify-center md:justify-start md:ml-20 gap-6 md:gap-8 w-full">
                   {/* Project Cards */}
+                  
                   <SpotlightCard 
-                    className="relative rounded-xl shadow-lg overflow-hidden custom-spotlight-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1 mb-6 md:mb-0"
+                    className="relative rounded-xl shadow-lg m-4 overflow-hidden custom-spotlight-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1 w-[90%] md:w-[calc(33.333%-1.5rem)] flex-shrink-0"
                     spotlightColor="rgba(0, 229, 255, 0.2)"
                   >
                     <div className="absolute -top-0 mt-5 left-1/2 transform -translate-x-1/2 z-10">
@@ -198,24 +201,21 @@ const App = () => {
 
                     <div className="pt-16 px-6 pb-6">  {/* Increased top padding for logo space */}
                       <p className="text-stone-300 text-center leading-relaxed mb-4">
-                        I'm Derek, an astro-engineer based in Tattooine. I like to build X-Wings at{' '}
+                      Developed a robust, full-stack e-commerce web application using{' '}
                         <a className="underline decoration-sky-500 hover:text-sky-600 transition-colors duration-200">
-                          My Company, Inc
-                        </a>. Outside of work, I enjoy{' '}
+                        Symfony 5 and modern PHP practices
+                        </a>. The platform features a secure customer journey{' '}
                         <a className="underline decoration-pink-500 hover:text-pink-600 transition-colors duration-200">
-                          watching pod-racing
+                        from product browsing to checkout, with comprehensive administrative controls for inventory and order management.
                         </a>{' '}
-                        and participating in{' '}
-                        <a className="underline decoration-indigo-500 hover:text-indigo-600 transition-colors duration-200">
-                          light-saber fights
-                        </a>.
                       </p>
-                      <Click />
+                      <Click href="https://github.com/Ramiferjanii" />
                     </div>
                   </SpotlightCard>
+                  
 
                   <SpotlightCard 
-                    className="relative rounded-xl shadow-lg overflow-hidden custom-spotlight-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1 mb-6 md:mb-0"
+                    className="relative rounded-xl shadow-lg m-4 overflow-hidden custom-spotlight-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1 w-[90%] md:w-[calc(33.333%-1.5rem)] flex-shrink-0"
                     spotlightColor="rgba(0, 229, 255, 0.2)"
                   >
                     <div className="absolute -top-0 mt-5 left-1/2 transform -translate-x-1/2 z-10">
@@ -226,24 +226,21 @@ const App = () => {
 
                     <div className="pt-16 px-6 pb-6">
                       <p className="text-stone-300 text-center leading-relaxed mb-4">
-                        As a React specialist, I've developed multiple orbital navigation systems using{' '}
+                      Full Stack Developer specializing in modern JavaScript ecosystems with {' '}
                         <a className="underline decoration-sky-500 hover:text-sky-600 transition-colors duration-200">
-                          Galactic React
-                        </a>. My open-source contributions include{' '}
+                        extensive experience
+                        </a>. building end-to-end web applications . Proficient in designing and implementing robust solutions using{' '}
                         <a className="underline decoration-pink-500 hover:text-pink-600 transition-colors duration-200">
-                          Hyperdrive Hooks
+                        React.js for dynamic frontends, Node.js and Express.js for scalable backend services
                         </a>{' '}
-                        and the{' '}
-                        <a className="underline decoration-indigo-500 hover:text-indigo-600 transition-colors duration-200">
-                          Force Context API
-                        </a>.
                       </p>
-                      <Click />
+                      <Click href="https://github.com/Ramiferjanii" />
                     </div>
                   </SpotlightCard>
+                  
 
                   <SpotlightCard 
-                    className="relative rounded-xl shadow-lg overflow-hidden custom-spotlight-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                    className="relative rounded-xl shadow-lg m-4 overflow-hidden custom-spotlight-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1 w-[90%] md:w-[calc(33.333%-1.5rem)] flex-shrink-0"
                     spotlightColor="rgba(0, 229, 255, 0.2)"
                   >
                     <div className="absolute -top-0 mt-5 left-1/2 transform -translate-x-1/2 z-10">
@@ -254,19 +251,39 @@ const App = () => {
 
                     <div className="pt-16 px-6 pb-6">
                       <p className="text-stone-300 text-center leading-relaxed mb-4">
-                        My Java expertise powers core systems for{' '}
+                      Implemented role-based access control (Admin/Teller/Customer) with {' '}
                         <a className="underline decoration-sky-500 hover:text-sky-600 transition-colors duration-200">
-                          Lightspeed Engines
-                        </a>. I've optimized{' '}
+                        Java Cryptography encryption
+                        </a>. Developed transaction modules (deposits/withdrawals/transfers) with{' '}
                         <a className="underline decoration-pink-500 hover:text-pink-600 transition-colors duration-200">
-                          Droid Neural Networks
+                        Built Swing-based GUI featuring dashboard analytics for transaction monitoring
                         </a>{' '}
-                        and developed safety protocols for{' '}
-                        <a className="underline decoration-indigo-500 hover:text-indigo-600 transition-colors duration-200">
-                          Ion Cannon Systems
-                        </a>.
+                        Applied OOP principles for modular account architecture{' '}
                       </p>
-                      <Click/>
+                      <Click href="https://github.com/Ramiferjanii" />
+                    </div>
+                  </SpotlightCard>
+                  <SpotlightCard 
+                    className="relative rounded-xl shadow-lg m-4 overflow-hidden custom-spotlight-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1 w-[90%] md:w-[calc(33.333%-1.5rem)] flex-shrink-0"
+                    spotlightColor="rgba(0, 229, 255, 0.2)"
+                  >
+                    <div className="absolute -top-0 mt-5 left-1/2 transform -translate-x-1/2 z-10">
+                      <div className="bg-blue-100 p-4 rounded-full shadow-lg hover:scale-110 transition-transform duration-300">
+                        <AiOutlinePython className="text-blue-700 text-3xl" />
+                      </div>
+                    </div>
+
+                    <div className="pt-16 px-6 pb-6">
+                      <p className="text-stone-300 text-center leading-relaxed mb-4">
+                      A classic chess implementation perfect for both enthusiasts and developers! This project offers  {' '}
+                        <a className="underline decoration-sky-500 hover:text-sky-600 transition-colors duration-200">
+                        a streamlined
+                        </a>. interactive chess experience with support{' '}
+                        <a className="underline decoration-pink-500 hover:text-pink-600 transition-colors duration-200">
+                        or two-player matches, move validation, and game state management
+                        </a>{' '}
+                      </p>
+                      <Click href="https://github.com/Ramiferjanii" />
                     </div>
                   </SpotlightCard>
                 </div>

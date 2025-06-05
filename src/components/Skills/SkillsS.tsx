@@ -34,8 +34,8 @@ const progressVariants = {
 }
 
 const getColorClass = (percentage: number) => {
-  if (percentage > 90) return "bg-[#28a745]" // Green
-  if (percentage > 80) return "bg-[#17a2b8]" // Blue
+  if (percentage > 80) return "bg-[#28a745]" // Green
+  if (percentage > 70) return "bg-[#17a2b8]" // Blue
   return "bg-[#dc3545]" // Red
 }
 
@@ -44,16 +44,25 @@ export default function SkillsS() {
   const [isVisible, setIsVisible] = useState(false)
 
   const skills: Skill[] = [
-    { name: "HTML", percentage: 91 },
+    { name: "HTML", percentage: 97 },
     { name: "CSS", percentage: 70 },
     { name: "PHP", percentage: 70 },
     { name: "Javascript", percentage: 90 },
-    { name: "JavaOOP", percentage: 90 },
+    { name: "JavaOOP GUI", percentage: 95 },
     { name: "ReactJs", percentage: 85 },
-    { name: "Symfony", percentage: 80 },
-    { name: "Python", percentage: 81 },
-    { name: "TypeScript", percentage: 80 },
-    { name: "MySQL", percentage: 80 },
+    { name: "Symfony", percentage: 65 },
+    { name: "Python", percentage: 95 },
+    { name: "TypeScript", percentage: 85 },
+    { name: "NodeJS", percentage: 80 },
+    { name: "ExpressJS", percentage: 80 },
+    { name: "MongoDB", percentage: 80 },
+    { name: "BootStrap", percentage: 80 },
+    { name: "SQL2", percentage: 90 },
+    { name: "SQL3", percentage: 90 },
+    { name: "PL/SQL", percentage: 80 },
+    { name: "Git", percentage: 91 },
+    { name: "TailwindCSS", percentage: 80 },
+
   ]
 
   useEffect(() => {

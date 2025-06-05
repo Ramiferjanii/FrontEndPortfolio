@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { FaGithub, FaLinkedin, FaInstagram, FaFacebook } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaInstagram, FaFacebook, FaFileAlt } from "react-icons/fa";
 
 const footerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -54,7 +54,8 @@ const Footer = () => {
               { icon: FaGithub, href: "https://github.com/Ramiferjanii", color: "hover:text-white" },
               { icon: FaLinkedin, href: "https://www.linkedin.com/in/rami-ben-ferjani-072150315/", color: "hover:text-blue-600" },
               { icon: FaInstagram, href: "https://www.instagram.com/rami_ferjani_", color: "hover:text-pink-600" },
-              { icon: FaFacebook, href: "https://www.facebook.com/share/15HVuTYGv6/", color: "hover:text-blue-500" }
+              { icon: FaFacebook, href: "https://www.facebook.com/share/15HVuTYGv6/", color: "hover:text-blue-500" },
+              { icon: FaFileAlt, href: "https://gotresume.net/benferjanirami", color: "hover:text-green-500" }
             ].map((social, index) => (
               <motion.a
                 key={index}

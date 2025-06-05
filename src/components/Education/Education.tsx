@@ -12,10 +12,17 @@ export default function Education() {
     {
       title: "Higher Institute of Computer Science Mahdia",
       company: "Bachelor's Degree in Business Intelligence",
-      period: "2024 - 2025",
+      period: "2024 - 2026",
       description:
         "This 3-year undergraduate program equips students with the technical and analytical skills needed to transform data into actionable business insights. Combining computer science, statistics, and business management, the curriculum prepares graduates for roles in data-driven decision-making across industries.",
     },
+    {
+      title: "Faculty of Economic Sciences and Management of Mahdia",
+      company: "Bachelor's Degree in Business Intelligence",
+      period: "2024 - 2026",
+      description:
+        "This 3-year undergraduate program equips students with the technical and analytical skills needed to transform data into actionable business insights. Combining computer science, statistics, and business management, the curriculum prepares graduates for roles in data-driven decision-making across industries.",
+    }
   ];
 
   const containerVariants = {

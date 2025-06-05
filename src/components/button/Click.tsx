@@ -2,7 +2,11 @@ import { motion, useMotionTemplate, useMotionValue, useSpring } from "framer-mot
 import { Button } from "@radix-ui/themes";
 import { MouseEvent } from "react";
 
-function Click() {
+interface ClickProps {
+  href?: string;
+}
+
+function Click({ href }: ClickProps) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const scaleX = useSpring(0, { stiffness: 400, damping: 20 });
@@ -22,7 +26,7 @@ function Click() {
         onHoverStart={() => scaleX.set(1)}
         onHoverEnd={() => scaleX.set(0)}
       >
-        <Button 
+        <Button
           asChild
           color="blue" 
           variant="soft"
@@ -35,7 +39,10 @@ function Click() {
                      hover:border-blue-300 transition-colors duration-200"
           onMouseEnter={handleHover}
         >
-          <motion.button
+          <motion.a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
             whileHover={{ 
               scale: 1.05,
               boxShadow: "0px 8px 24px rgba(59, 130, 246, 0.15)"
@@ -69,7 +76,7 @@ function Click() {
                 transformOrigin: "left center"
               }}
             />
-          </motion.button>
+          </motion.a>
         </Button>
       </motion.div>
     </div>

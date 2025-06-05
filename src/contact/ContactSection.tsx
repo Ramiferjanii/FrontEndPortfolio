@@ -16,6 +16,12 @@ export default function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [error, setError] = useState("")
+  const [fieldErrors, setFieldErrors] = useState({
+    name: false,
+    email: false,
+    subject: false,
+    message: false
+  })
 
   // Test API connection on component mount
   useEffect(() => {
@@ -24,15 +30,36 @@ export default function ContactSection() {
     });
   }, []);
 
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
-    setError("") // Clear any previous errors
+    setError("")
+    setFieldErrors(prev => ({ ...prev, [name]: false }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (isSubmitting) return
+
+    // Validate all fields
+    const newFieldErrors = {
+      name: !formData.name.trim(),
+      email: !validateEmail(formData.email),
+      subject: !formData.subject.trim(),
+      message: !formData.message.trim()
+    }
+    
+    setFieldErrors(newFieldErrors)
+
+    // If any field has error, don't submit
+    if (Object.values(newFieldErrors).some(error => error)) {
+      setError("Please fill all fields correctly")
+      return
+    }
     
     setIsSubmitting(true)
     setError("")
@@ -74,6 +101,33 @@ export default function ContactSection() {
         </motion.div>
       )}
     </AnimatePresence>
+  )
+
+  const ErrorAnimation = ({ show }: { show: boolean }) => (
+    <motion.div
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ 
+        scale: show ? 1 : 0,
+        opacity: show ? 1 : 0
+      }}
+      transition={{ 
+        type: "spring", 
+        stiffness: 500, 
+        damping: 30,
+        duration: 0.3
+      }}
+      className="absolute -right-8 top-1/2 -translate-y-1/2"
+    >
+      <motion.div 
+        className="text-red-500 text-xl bg-red-100/20 p-1 rounded-full shadow-lg"
+        animate={show ? {
+          scale: [1, 1.2, 1],
+          rotate: [0, -10, 10, -10, 0],
+          backgroundColor: ['rgba(239, 68, 68, 0.2)', 'rgba(239, 68, 68, 0.3)', 'rgba(239, 68, 68, 0.2)']
+        } : {}}
+        transition={{ duration: 0.5 }}
+      >!</motion.div>
+    </motion.div>
   )
 
   return (
@@ -138,64 +192,138 @@ export default function ContactSection() {
             className="space-y-6 bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-xl"
           >
             {error && (
-              <div className="text-red-500 bg-red-100/10 p-3 rounded-lg mb-4">
-                {error}
-              </div>
+              <motion.div
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                transition={{ 
+                  type: "spring",
+                  stiffness: 500,
+                  damping: 30,
+                  duration: 0.3
+                }}
+                className="text-red-500 bg-red-100/20 p-4 rounded-lg mb-4 border border-red-500/50 shadow-lg"
+              >
+                <div className="flex items-center gap-2">
+                  <motion.div
+                    animate={{ rotate: [0, 360] }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="text-xl"
+                  >⚠️</motion.div>
+                  {error}
+                </div>
+              </motion.div>
             )}
             <div className="space-y-4 w-4/5">
               <div className="relative">
                 <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
+                <motion.input
                   type="text"
-                  className="w-full pl-12 pr-4 py-3 bg-gray-900 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
+                  className={`w-full pl-12 pr-4 py-3 bg-gray-900 rounded-lg border ${fieldErrors.name ? 'border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.3)]' : 'border-gray-700'} focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500`}
                   placeholder="Your Name"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
                   required
                   disabled={isSubmitting}
+                  animate={fieldErrors.name ? {
+                    x: [0, -10, 10, -10, 10, 0],
+                    borderColor: ['#ef4444', '#ef4444', '#ef4444', '#ef4444', '#ef4444', '#ef4444'],
+                    boxShadow: [
+                      '0 0 10px rgba(239,68,68,0.3)',
+                      '0 0 15px rgba(239,68,68,0.4)',
+                      '0 0 10px rgba(239,68,68,0.3)',
+                      '0 0 15px rgba(239,68,68,0.4)',
+                      '0 0 10px rgba(239,68,68,0.3)',
+                      '0 0 10px rgba(239,68,68,0.3)'
+                    ]
+                  } : {}}
+                  transition={{ duration: 0.5 }}
                 />
+                <ErrorAnimation show={fieldErrors.name} />
               </div>
 
               <div className="relative">
                 <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
+                <motion.input
                   type="email"
-                  className="w-full pl-12 pr-4 py-3 bg-gray-900 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
+                  className={`w-full pl-12 pr-4 py-3 bg-gray-900 rounded-lg border ${fieldErrors.email ? 'border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.3)]' : 'border-gray-700'} focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500`}
                   placeholder="Your Email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
                   required
                   disabled={isSubmitting}
+                  animate={fieldErrors.email ? {
+                    x: [0, -10, 10, -10, 10, 0],
+                    borderColor: ['#ef4444', '#ef4444', '#ef4444', '#ef4444', '#ef4444', '#ef4444'],
+                    boxShadow: [
+                      '0 0 10px rgba(239,68,68,0.3)',
+                      '0 0 15px rgba(239,68,68,0.4)',
+                      '0 0 10px rgba(239,68,68,0.3)',
+                      '0 0 15px rgba(239,68,68,0.4)',
+                      '0 0 10px rgba(239,68,68,0.3)',
+                      '0 0 10px rgba(239,68,68,0.3)'
+                    ]
+                  } : {}}
+                  transition={{ duration: 0.5 }}
                 />
+                <ErrorAnimation show={fieldErrors.email} />
               </div>
 
               <div className="relative">
                 <FiBook className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
+                <motion.input
                   type="text"
-                  className="w-full pl-12 pr-4 py-3 bg-gray-900 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
+                  className={`w-full pl-12 pr-4 py-3 bg-gray-900 rounded-lg border ${fieldErrors.subject ? 'border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.3)]' : 'border-gray-700'} focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500`}
                   placeholder="Subject"
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
                   required
                   disabled={isSubmitting}
+                  animate={fieldErrors.subject ? {
+                    x: [0, -10, 10, -10, 10, 0],
+                    borderColor: ['#ef4444', '#ef4444', '#ef4444', '#ef4444', '#ef4444', '#ef4444'],
+                    boxShadow: [
+                      '0 0 10px rgba(239,68,68,0.3)',
+                      '0 0 15px rgba(239,68,68,0.4)',
+                      '0 0 10px rgba(239,68,68,0.3)',
+                      '0 0 15px rgba(239,68,68,0.4)',
+                      '0 0 10px rgba(239,68,68,0.3)',
+                      '0 0 10px rgba(239,68,68,0.3)'
+                    ]
+                  } : {}}
+                  transition={{ duration: 0.5 }}
                 />
+                <ErrorAnimation show={fieldErrors.subject} />
               </div>
 
               <div className="relative">
                 <FiMessageSquare className="absolute left-4 top-4 text-gray-400" />
-                <textarea
-                  className="w-full pl-12 pr-4 py-3 bg-gray-900 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 h-40"
+                <motion.textarea
+                  className={`w-full pl-12 pr-4 py-3 bg-gray-900 rounded-lg border ${fieldErrors.message ? 'border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.3)]' : 'border-gray-700'} focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 h-40`}
                   placeholder="Your Message"
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
                   required
                   disabled={isSubmitting}
+                  animate={fieldErrors.message ? {
+                    x: [0, -10, 10, -10, 10, 0],
+                    borderColor: ['#ef4444', '#ef4444', '#ef4444', '#ef4444', '#ef4444', '#ef4444'],
+                    boxShadow: [
+                      '0 0 10px rgba(239,68,68,0.3)',
+                      '0 0 15px rgba(239,68,68,0.4)',
+                      '0 0 10px rgba(239,68,68,0.3)',
+                      '0 0 15px rgba(239,68,68,0.4)',
+                      '0 0 10px rgba(239,68,68,0.3)',
+                      '0 0 10px rgba(239,68,68,0.3)'
+                    ]
+                  } : {}}
+                  transition={{ duration: 0.5 }}
                 />
+                <ErrorAnimation show={fieldErrors.message} />
               </div>
             </div>
 

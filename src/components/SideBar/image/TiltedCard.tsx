@@ -1,5 +1,5 @@
 import type { SpringOptions } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback, memo, useEffect } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 interface TiltedCardProps {
@@ -24,7 +24,7 @@ const springValues: SpringOptions = {
   mass: 2,
 };
 
-export default function TiltedCard({
+const TiltedCard = memo(function TiltedCard({
   imageSrc,
   altText = "Tilted card image",
   captionText = "",
@@ -53,9 +53,19 @@ export default function TiltedCard({
   });
 
   const [lastY, setLastY] = useState(0);
+  const [isInitialMount, setIsInitialMount] = useState(true);
 
-  function handleMouse(e: React.MouseEvent<HTMLElement>) {
-    if (!ref.current) return;
+  useEffect(() => {
+    if (isInitialMount) {
+      const timer = setTimeout(() => {
+        setIsInitialMount(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isInitialMount]);
+
+  const handleMouse = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    if (!ref.current || isInitialMount) return;
 
     const rect = ref.current.getBoundingClientRect();
     const offsetX = e.clientX - rect.left - rect.width / 2;
@@ -73,20 +83,22 @@ export default function TiltedCard({
     const velocityY = offsetY - lastY;
     rotateFigcaption.set(-velocityY * 0.6);
     setLastY(offsetY);
-  }
+  }, [rotateAmplitude, rotateX, rotateY, x, y, rotateFigcaption, lastY, isInitialMount]);
 
-  function handleMouseEnter() {
+  const handleMouseEnter = useCallback(() => {
+    if (isInitialMount) return;
     scale.set(scaleOnHover);
     opacity.set(1);
-  }
+  }, [scale, opacity, scaleOnHover, isInitialMount]);
 
-  function handleMouseLeave() {
+  const handleMouseLeave = useCallback(() => {
+    if (isInitialMount) return;
     opacity.set(0);
     scale.set(1);
     rotateX.set(0);
     rotateY.set(0);
     rotateFigcaption.set(0);
-  }
+  }, [opacity, scale, rotateX, rotateY, rotateFigcaption, isInitialMount]);
 
   return (
     <figure
@@ -107,7 +119,7 @@ export default function TiltedCard({
       )}
 
       <motion.div
-        className="relative  [transform-style:preserve-3d]"
+        className="relative [transform-style:preserve-3d]"
         style={{
           width: imageWidth,
           height: imageHeight,
@@ -115,11 +127,14 @@ export default function TiltedCard({
           rotateY,
           scale,
         }}
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
       >
         <motion.img
           src={imageSrc}
           alt={altText}
-          className="absolute  top-10 left-0 object-cover rounded-[15px] will-change-transform [transform:translateZ(0)]"
+          className="absolute top-10 left-0 object-cover rounded-[15px] will-change-transform [transform:translateZ(0)]"
           style={{
             width: imageWidth,
             height: imageHeight,
@@ -128,17 +143,15 @@ export default function TiltedCard({
         
         {displayOverlayContent && overlayContent && (
           <motion.div 
-            className="absolute inset-x-0  shadow-inner  text-sm  text-black -bottom-8  left-5 z-[2] [transform:translateZ(30px)]"
+            className="absolute inset-x-0 shadow-inner text-sm text-black -bottom-8 left-5 z-[2] [transform:translateZ(30px)]"
           >
             {overlayContent}
           </motion.div>
         )}
-        
-        
       </motion.div>
       {showTooltip && (
         <motion.figcaption
-          className=" absolute left-0 top-0 rounded-full  shadow-lg shadow-gray-600   bg-white px-[10px] py-[4px] text-[10px] text-[#2d2d2d] opacity-0 z-[3] hidden sm:block"
+          className="absolute left-0 top-0 rounded-full shadow-lg shadow-gray-600 bg-white px-[10px] py-[4px] text-[10px] text-[#2d2d2d] opacity-0 z-[3] hidden sm:block"
           style={{
             x,
             y,
@@ -151,4 +164,6 @@ export default function TiltedCard({
       )}
     </figure>
   );
-}
+});
+
+export default TiltedCard;
